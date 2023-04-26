@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {  getReadingList,markAsFinished, removeFromReadingList } from '@tmo/books/data-access'
 
 @Component({
   selector: 'tmo-reading-list',
@@ -9,10 +10,24 @@ import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
 })
 export class ReadingListComponent {
   readingList$ = this.store.select(getReadingList);
+  snackBarRef: any;
 
-  constructor(private readonly store: Store) {}
+  constructor(private readonly store: Store, private _snackBar: MatSnackBar) {}
 
   removeFromReadingList(item) {
     this.store.dispatch(removeFromReadingList({ item }));
   }
+
+  markAsFinished(item) {
+    this._snackBar.open(
+      `Book with title as ${
+        item.title
+      } has been finished `,
+      'DONE',
+      {duration:5000}
+    );
+    this.store.dispatch(markAsFinished({ item }));
+  };
+
+
 }

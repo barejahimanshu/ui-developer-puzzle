@@ -68,6 +68,15 @@ describe('Books Reducer', () => {
       const result: State = reducer(state, action);
       expect(result.ids).toEqual(['B']);
     });
+
+    it('failedFromMarkAsRead should fail to update state', () => {
+      const action = ReadingListActions.failedMarkAsFinished({
+        item: createReadingListItem('E'),
+      });
+      const result: State = reducer(state, action);
+      expect(result.ids).toEqual(['A', 'B']);
+    });
+
   });
 
   describe('unknown action', () => {

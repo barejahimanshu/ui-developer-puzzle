@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
+import { createEntityAdapter, EntityAdapter, EntityState, Update } from '@ngrx/entity';
 
 import * as ReadingListActions from './reading-list.actions';
 import { ReadingListItem } from '@tmo/shared/models';
@@ -18,33 +18,33 @@ export interface ReadingListPartialState {
 export const readingListAdapter: EntityAdapter<ReadingListItem> = createEntityAdapter<
   ReadingListItem
 >({
-  selectId: item => item.bookId
+  selectId: (item) => item.bookId,
 });
 
 export const initialState: State = readingListAdapter.getInitialState({
   loaded: false,
-  error: null
+  error: null,
 });
 
 const readingListReducer = createReducer(
   initialState,
-  on(ReadingListActions.init, state => {
+  on(ReadingListActions.init, (state) => {
     return {
       ...state,
       loaded: false,
-      error: null
+      error: null,
     };
   }),
   on(ReadingListActions.loadReadingListSuccess, (state, action) => {
     return readingListAdapter.setAll(action.list, {
       ...state,
-      loaded: true
+      loaded: true,
     });
   }),
   on(ReadingListActions.loadReadingListError, (state, action) => {
     return {
       ...state,
-      error: action.error
+      error: action.error,
     };
   }),
   on(ReadingListActions.addToReadingList, (state, action) =>
@@ -57,10 +57,10 @@ const readingListReducer = createReducer(
     return readingListAdapter.removeOne(action.book.id, state);
   }),
   on(ReadingListActions.confirmedAddToReadingList, (state, action) => {
-    return state
+    return state;
   }),
   on(ReadingListActions.confirmedRemoveFromReadingList, (state, action) => {
-    return state
+    return state;
   }),
   on(ReadingListActions.failedRemoveFromReadingList, (state, action) => {
     return readingListAdapter.addOne(
@@ -68,6 +68,21 @@ const readingListReducer = createReducer(
       state
     );
   }),
+  on(ReadingListActions.markAsFinished, (state, action) => {
+    return state;
+  }),
+
+  on(ReadingListActions.failedMarkAsFinished, (state, action) => {
+    return state;
+  }),
+
+  on(ReadingListActions.confirmedMarkAsFinished, (state, action) => {
+    const bookItem: Update<ReadingListItem> = {
+      id: action.item.bookId,
+      changes: action.item,
+    };
+    return readingListAdapter.updateOne(bookItem, state);
+  })
 );
 
 export function reducer(state: State | undefined, action: Action) {
